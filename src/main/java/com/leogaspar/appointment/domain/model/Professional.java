@@ -21,13 +21,13 @@ public class Professional {
 		
 	}
 
-	public Professional(String id, String name, String specialty, String schedule, LocalDateTime createdAt) {
+	public Professional(String id, String name, String specialty, String schedule) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.specialty = specialty;
 		this.schedule = schedule;
-		this.createdAt = createdAt;
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public String getId() {
