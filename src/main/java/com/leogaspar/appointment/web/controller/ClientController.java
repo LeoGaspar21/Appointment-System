@@ -1,8 +1,12 @@
 package com.leogaspar.appointment.web.controller;
 
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +29,14 @@ public class ClientController {
 		repository.save(newClient);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(newClient);
+		
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Client>> getAllClients() {
+		List<Client> clients = repository.findAll();
+		
+		return ResponseEntity.ok().body(clients);
 		
 	}
 
