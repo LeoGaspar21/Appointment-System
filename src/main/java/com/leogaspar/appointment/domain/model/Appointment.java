@@ -1,5 +1,6 @@
 package com.leogaspar.appointment.domain.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -14,7 +15,7 @@ public class Appointment{
 	@Id
 	private String id;
 	
-	private LocalDateTime date;
+	private LocalDate date;
 	private LocalTime startTime;
 	private LocalTime endTime;
 	private AppointmentStatus status;
@@ -26,8 +27,8 @@ public class Appointment{
 		
 	}
 
-	public Appointment(String id, LocalDateTime date, LocalTime startTime, LocalTime endTime, AppointmentStatus status,
-			String professionalId, String clientId, LocalDateTime createdAt) {
+	public Appointment(String id, LocalDate date, LocalTime startTime, LocalTime endTime, AppointmentStatus status,
+			String professionalId, String clientId) {
 		super();
 		this.id = id;
 		this.date = date;
@@ -36,7 +37,7 @@ public class Appointment{
 		this.status = status;
 		this.professionalId = professionalId;
 		this.clientId = clientId;
-		this.createdAt = createdAt;
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public String getId() {
@@ -47,11 +48,11 @@ public class Appointment{
 		this.id = id;
 	}
 
-	public LocalDateTime getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 
