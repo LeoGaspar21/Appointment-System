@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.leogaspar.appointment.domain.model.Appointment;
 import com.leogaspar.appointment.domain.model.AppointmentStatus;
 import com.leogaspar.appointment.domain.repository.AppointmentRepository;
+import com.leogaspar.appointment.domain.repository.ClientRepository;
+import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
+import com.leogaspar.appointment.exceptions.ClientNotFoundException;
+import com.leogaspar.appointment.exceptions.ProfessionalNotFoundException;
 
 @RestController
 @RequestMapping("/appointment")
@@ -22,9 +26,23 @@ public class AppointmentController {
 
 	@Autowired
 	private AppointmentRepository repository;
+	
+	
+	@Autowired
+	private ProfessionalRepository professionalRepository;
+	
+	@Autowired
+	private ClientRepository clientRepository;
+	
 
 	@PostMapping
 	public ResponseEntity<Appointment> creatAppointment(@RequestBody Appointment appointment) {
+		
+		professionalRepository.findById(appointment.getProfessionalId()).orElseThrow(() -> new ProfessionalNotFoundException("Professional not Found"));
+		
+		clientRepository.findById(appointment.getClientId()).orElseThrow(() -> new ClientNotFoundException("Client not Found"));
+
+		
 		Appointment newAppointment = new Appointment(appointment.getId(), appointment.getDate(),
 				appointment.getStartTime(), appointment.getEndTime(), AppointmentStatus.SCHEDULED,
 				appointment.getProfessionalId(), appointment.getClientId());
