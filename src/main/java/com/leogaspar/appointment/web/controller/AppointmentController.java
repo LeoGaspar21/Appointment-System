@@ -18,6 +18,7 @@ import com.leogaspar.appointment.domain.repository.AppointmentRepository;
 import com.leogaspar.appointment.domain.repository.ClientRepository;
 import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
 import com.leogaspar.appointment.exceptions.ClientNotFoundException;
+import com.leogaspar.appointment.exceptions.InvalidAppointmentTimeException;
 import com.leogaspar.appointment.exceptions.ProfessionalNotFoundException;
 
 @RestController
@@ -36,12 +37,15 @@ public class AppointmentController {
 	
 
 	@PostMapping
-	public ResponseEntity<Appointment> creatAppointment(@RequestBody Appointment appointment) {
+	public ResponseEntity<Appointment> createAppointment(@RequestBody Appointment appointment) {
 		
 		professionalRepository.findById(appointment.getProfessionalId()).orElseThrow(() -> new ProfessionalNotFoundException("Professional not Found"));
 		
 		clientRepository.findById(appointment.getClientId()).orElseThrow(() -> new ClientNotFoundException("Client not Found"));
-
+		
+		if (!appointment.getEndTime().isAfter(appointment.getStartTime())) {
+			throw  new InvalidAppointmentTimeException("Start or End time invalid");
+		}
 		
 		Appointment newAppointment = new Appointment(appointment.getId(), appointment.getDate(),
 				appointment.getStartTime(), appointment.getEndTime(), AppointmentStatus.SCHEDULED,
