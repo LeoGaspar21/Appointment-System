@@ -25,7 +25,7 @@ public class ClientController {
 
 	@PostMapping
 	public ResponseEntity<Client> createClient(@RequestBody Client client) {
-		Client newClient = new Client(client.getId(), client.getName(), client.getEmail(), client.getPhone());
+		Client newClient = new Client(null, client.getName(), client.getEmail(), client.getPhone());
 		
 		repository.save(newClient);
 		

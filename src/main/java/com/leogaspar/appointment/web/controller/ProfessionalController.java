@@ -26,7 +26,7 @@ public class ProfessionalController {
 	
 	@PostMapping
 	public ResponseEntity<Professional> createProfessionals(@RequestBody Professional professional) {
-		Professional newProfessional = new Professional(professional.getId(), professional.getName(),
+		Professional newProfessional = new Professional(null, professional.getName(),
 				professional.getSpecialty(), professional.getSchedule());
 		
 		repository.save(newProfessional);
