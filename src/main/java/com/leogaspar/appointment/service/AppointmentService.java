@@ -10,6 +10,7 @@ import com.leogaspar.appointment.domain.model.AppointmentStatus;
 import com.leogaspar.appointment.domain.repository.AppointmentRepository;
 import com.leogaspar.appointment.domain.repository.ClientRepository;
 import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
+import com.leogaspar.appointment.dto.AppointmentDTO;
 import com.leogaspar.appointment.exceptions.AppointmentConflictException;
 import com.leogaspar.appointment.exceptions.ClientNotFoundException;
 import com.leogaspar.appointment.exceptions.InvalidAppointmentTimeException;
@@ -28,7 +29,7 @@ public class AppointmentService {
 	private ProfessionalRepository professionalRepository;
 	
 	
-	public Appointment createAppointment(Appointment appointment) {
+	public Appointment createAppointment(AppointmentDTO appointment) {
 		
 		professionalRepository.findById(appointment.getProfessionalId()).orElseThrow(() -> new ProfessionalNotFoundException("Professional Not Found"));
 		
