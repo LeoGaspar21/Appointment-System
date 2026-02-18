@@ -12,6 +12,7 @@ import com.leogaspar.appointment.domain.repository.ClientRepository;
 import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
 import com.leogaspar.appointment.dto.AppointmentDTO;
 import com.leogaspar.appointment.exceptions.AppointmentConflictException;
+import com.leogaspar.appointment.exceptions.AppointmentNotFoundException;
 import com.leogaspar.appointment.exceptions.ClientNotFoundException;
 import com.leogaspar.appointment.exceptions.InvalidAppointmentTimeException;
 import com.leogaspar.appointment.exceptions.ProfessionalNotFoundException;
@@ -29,32 +30,49 @@ public class AppointmentService {
 	private ProfessionalRepository professionalRepository;
 	
 	
-	public Appointment createAppointment(AppointmentDTO appointment) {
+	public Appointment createAppointment(AppointmentDTO request) {
 		
-		professionalRepository.findById(appointment.getProfessionalId()).orElseThrow(() -> new ProfessionalNotFoundException("Professional Not Found"));
+		professionalRepository.findById(request.getProfessionalId()).orElseThrow(() -> new ProfessionalNotFoundException("Professional Not Found"));
 		
-		clientRepository.findById(appointment.getClientId()).orElseThrow(() -> new ClientNotFoundException("Client Not Found"));
+		clientRepository.findById(request.getClientId()).orElseThrow(() -> new ClientNotFoundException("Client Not Found"));
 		
-		if (!appointment.getEndTime().isAfter(appointment.getStartTime())) {
+		if (!request.getEndTime().isAfter(request.getStartTime())) {
 			throw new InvalidAppointmentTimeException("Start or End time invalid");
 		}
 		
-		List<Appointment> existingAppointments = repository.findByProfessionalIdAndDate(appointment.getProfessionalId(), appointment.getDate());
+		List<Appointment> existingAppointments = repository.findByProfessionalIdAndDate(request.getProfessionalId(), request.getDate());
 		
 		for (Appointment exist : existingAppointments) {
-			if(appointment.getEndTime().isAfter(exist.getStartTime()) && appointment.getStartTime().isBefore(exist.getEndTime())) {
+			if(request.getEndTime().isAfter(exist.getStartTime()) && request.getStartTime().isBefore(exist.getEndTime())) {
 				throw new AppointmentConflictException("Appointment Conflict Error");
 			}
 		}
 		
 		
 			
-		Appointment newAppointment = new Appointment(null,appointment.getDate(),appointment.getStartTime(),appointment.getEndTime(),AppointmentStatus.SCHEDULED,appointment.getProfessionalId(),appointment.getClientId());
+		Appointment newAppointment = new Appointment(null,request.getDate(),request.getStartTime(),request.getEndTime(),AppointmentStatus.SCHEDULED,request.getProfessionalId(),request.getClientId());
 		
-		repository.save(newAppointment);
+		Appointment saved = repository.save(newAppointment);
 		
-		return newAppointment;
+		return saved;
 		
+		
+	}
+	
+	
+	public Appointment cancelAppointment(String id) {
+		Appointment appointmentCancel = repository.findById(id).orElseThrow(() -> new AppointmentNotFoundException("Appointment Not Found"));
+		
+		if (appointmentCancel.getStatus() != AppointmentStatus.SCHEDULED) {
+			throw new AppointmentConflictException("Appointment can't be canceled");
+		}
+		appointmentCancel.setStatus(AppointmentStatus.CANCELED);
+		
+		
+		
+		return repository.save(appointmentCancel);
+		
+	
 		
 	}
 	
