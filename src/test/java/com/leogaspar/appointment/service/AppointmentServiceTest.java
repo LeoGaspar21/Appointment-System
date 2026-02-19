@@ -125,6 +125,24 @@ public class AppointmentServiceTest {
 		
 	}
 
-	
+	@Test 
+	void shoultChangeStatusAfterCancelAppointment(){
+		String id = "456";
+		
+		Appointment appointment = new Appointment();
+		
+		appointment.setId(id);
+		appointment.setStatus(AppointmentStatus.SCHEDULED);
+		
+		when(repository.findById(id)).thenReturn(Optional.of(appointment));
+		when(repository.save(appointment)).thenReturn(appointment);
+		
+		Appointment result = service.cancelAppointment(id);
+		
+		
+		
+		assertEquals(AppointmentStatus.CANCELED, result.getStatus());
+
+	}
 	
 }
