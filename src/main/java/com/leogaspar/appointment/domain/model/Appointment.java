@@ -8,6 +8,8 @@ import java.util.Objects;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.leogaspar.appointment.exceptions.InvalidAppointmentStateException;
+
 @Document(collection = "appointment")
 
 public class Appointment{
@@ -121,6 +123,13 @@ public class Appointment{
 		return Objects.equals(id, other.id);
 	}
 	
+	public void cancel() {
+		if (this.status != AppointmentStatus.SCHEDULED) {
+			throw new InvalidAppointmentStateException("Appointment can't be Canceled");
+		}
+		
+		this.status = AppointmentStatus.CANCELED;
+	}
 	
 	
 	

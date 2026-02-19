@@ -63,17 +63,9 @@ public class AppointmentService {
 	public Appointment cancelAppointment(String id) {
 		Appointment appointmentCancel = repository.findById(id).orElseThrow(() -> new AppointmentNotFoundException("Appointment Not Found"));
 		
-		if (appointmentCancel.getStatus() != AppointmentStatus.SCHEDULED) {
-			throw new AppointmentConflictException("Appointment can't be canceled");
-		}
-		appointmentCancel.setStatus(AppointmentStatus.CANCELED);
-		
-		
+		appointmentCancel.cancel();
 		
 		return repository.save(appointmentCancel);
-		
-	
-		
 	}
 	
 	
