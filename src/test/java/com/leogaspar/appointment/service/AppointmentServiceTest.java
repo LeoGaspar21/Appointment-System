@@ -1,9 +1,10 @@
 package com.leogaspar.appointment.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,8 @@ import com.leogaspar.appointment.domain.repository.AppointmentRepository;
 import com.leogaspar.appointment.domain.repository.ClientRepository;
 import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
 import com.leogaspar.appointment.dto.AppointmentDTO;
+import com.leogaspar.appointment.exceptions.AppointmentConflictException;
+import com.leogaspar.appointment.exceptions.AppointmentNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
@@ -72,5 +75,56 @@ public class AppointmentServiceTest {
 		
 		
 	}
+	
+	@Test
+	void shouldThrowAppointmentNotFoundException() {
+		
+		String id = "opadsiard456";
+		
+		when(repository.findById(id)).thenReturn(Optional.empty());
+		
+		assertThrows(AppointmentNotFoundException.class, () -> service.cancelAppointment(id));
+		
+		verify(repository, never()).save(any());
+	}
+	
+	@Test
+	void shouldThrowWhenAppointmentIsAlreadyCancelled() {
+		
+		String id = "123";
+		
+		Appointment appointment = new Appointment();
+		
+		appointment.setId(id);
+		appointment.setStatus(AppointmentStatus.CANCELED);
+		
+		when(repository.findById(id)).thenReturn(Optional.of(appointment));
+		
+		assertThrows(AppointmentConflictException.class, () -> service.cancelAppointment(id));
+		
+		verify(repository, never()).save(any());
+		
+	}
+	
+	@Test
+	void shouldThrowWhenAppointmentIsAlreadyCompleted() {
+		
+		String id = "321";
+		
+		Appointment appointment = new Appointment();
+		
+		appointment.setId(id);
+		appointment.setStatus(AppointmentStatus.COMPLETED);
+		
+		when(repository.findById(id)).thenReturn(Optional.of(appointment));
+		
+		assertThrows(AppointmentConflictException.class, () -> service.cancelAppointment(id));
+		
+		verify(repository, never()).save(any());
+		
+		
+	}
+
+	
 	
 }
