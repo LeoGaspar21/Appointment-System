@@ -30,6 +30,7 @@ import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
 import com.leogaspar.appointment.dto.AppointmentDTO;
 import com.leogaspar.appointment.exceptions.AppointmentConflictException;
 import com.leogaspar.appointment.exceptions.AppointmentNotFoundException;
+import com.leogaspar.appointment.exceptions.InvalidAppointmentStateException;
 
 @ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
@@ -100,7 +101,7 @@ public class AppointmentServiceTest {
 		
 		when(repository.findById(id)).thenReturn(Optional.of(appointment));
 		
-		assertThrows(AppointmentConflictException.class, () -> service.cancelAppointment(id));
+		assertThrows(InvalidAppointmentStateException.class, () -> service.cancelAppointment(id));
 		
 		verify(repository, never()).save(any());
 		
@@ -118,7 +119,7 @@ public class AppointmentServiceTest {
 		
 		when(repository.findById(id)).thenReturn(Optional.of(appointment));
 		
-		assertThrows(AppointmentConflictException.class, () -> service.cancelAppointment(id));
+		assertThrows(InvalidAppointmentStateException.class, () -> service.cancelAppointment(id));
 		
 		verify(repository, never()).save(any());
 		
