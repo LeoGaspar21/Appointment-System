@@ -28,7 +28,6 @@ import com.leogaspar.appointment.domain.repository.AppointmentRepository;
 import com.leogaspar.appointment.domain.repository.ClientRepository;
 import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
 import com.leogaspar.appointment.dto.AppointmentDTO;
-import com.leogaspar.appointment.exceptions.AppointmentConflictException;
 import com.leogaspar.appointment.exceptions.AppointmentNotFoundException;
 import com.leogaspar.appointment.exceptions.InvalidAppointmentStateException;
 
