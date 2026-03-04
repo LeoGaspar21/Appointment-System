@@ -29,7 +29,10 @@ import com.leogaspar.appointment.domain.repository.ClientRepository;
 import com.leogaspar.appointment.domain.repository.ProfessionalRepository;
 import com.leogaspar.appointment.dto.AppointmentDTO;
 import com.leogaspar.appointment.exceptions.AppointmentNotFoundException;
+import com.leogaspar.appointment.exceptions.ClientNotFoundException;
 import com.leogaspar.appointment.exceptions.InvalidAppointmentStateException;
+import com.leogaspar.appointment.exceptions.InvalidAppointmentTimeException;
+import com.leogaspar.appointment.exceptions.ProfessionalNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
@@ -45,6 +48,7 @@ public class AppointmentServiceTest {
 	
 	@InjectMocks
 	AppointmentService service;
+	
 	
 	@Test
 	void shouldCreateAppointmentSuccessfully() {
@@ -144,5 +148,68 @@ public class AppointmentServiceTest {
 		assertEquals(AppointmentStatus.CANCELED, result.getStatus());
 
 	}
+	
+	@Test 
+	void shouldThrowExceptionWhenProfessionalDoesNotExist() {
+		
+		
+		String professionalId = "546";
+		
+		AppointmentDTO appointment = new AppointmentDTO();
+		appointment.setProfessionalId(professionalId);
+		
+		when(professionalRepository.findById(professionalId)).thenReturn(Optional.empty());
+		
+		assertThrows(ProfessionalNotFoundException.class, () -> service.createAppointment(appointment));
+	
+		
+		
+		
+		verify(repository, never()).save(any());
+		
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenClientDoesNotExist(){
+		String clientId = "846";
+		String professionalId = "546";
+		
+		AppointmentDTO appointment = new AppointmentDTO();
+		appointment.setClientId(clientId);
+		appointment.setProfessionalId(professionalId);
+		
+		when(professionalRepository.findById(professionalId)).thenReturn(Optional.of(new Professional()));
+		when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
+		
+		assertThrows(ClientNotFoundException.class, () -> service.createAppointment(appointment));
+
+		
+		verify(repository, never()).save(any());
+		
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenAppointmentTimeConflicts() {
+		String clientId = "846";
+		String professionalId = "546";
+		
+		AppointmentDTO dto = new AppointmentDTO();
+		dto.setClientId(clientId);
+		dto.setProfessionalId(professionalId);
+		dto.setDate(LocalDate.parse("2026-03-04"));
+		dto.setStartTime(LocalTime.parse("13:00"));
+		dto.setEndTime(LocalTime.parse("11:30"));
+		
+		when(professionalRepository.findById(dto.getProfessionalId())).thenReturn(Optional.of(new Professional()));
+		when(clientRepository.findById(dto.getClientId())).thenReturn(Optional.of(new Client()));
+		
+		assertThrows(InvalidAppointmentTimeException.class, () -> service.createAppointment(dto));
+		
+		verify(repository, never()).save(any());
+		
+	}
+	
+	
+	
 	
 }
