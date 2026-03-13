@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.leogaspar.appointment.domain.model.Appointment;
 import com.leogaspar.appointment.domain.repository.AppointmentRepository;
+import com.leogaspar.appointment.exceptions.AppointmentNotFoundException;
 import com.leogaspar.appointment.service.AppointmentService;
 import com.leogaspar.appointment.web.controller.AppointmentController;
 
@@ -37,5 +38,18 @@ class AppointmentControllerTest {
 
         mockMvc.perform(patch("/appointment/{id}/cancel", id))
                 .andExpect(status().isOk());
+    }
+    
+    @Test
+    void shouldReturnNotFoundWhenCancelingNonExistingAppointment() throws Exception {
+    	
+    	String id = "123";
+    	
+    	
+    	when(appointmentService.cancelAppointment(id)).thenThrow(new AppointmentNotFoundException("Appointment not found"));
+    	
+    	
+    	mockMvc.perform(patch("/appointment/{id}/cancel", id)).andExpect(status().isNotFound());
+    	
     }
 }

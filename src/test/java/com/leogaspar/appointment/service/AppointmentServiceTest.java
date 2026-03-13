@@ -209,7 +209,33 @@ public class AppointmentServiceTest {
 		
 	}
 	
+	@Test
+	void shouldThrowExceptionWhenCancelingNonExistingAppointment() {
+		String id = "321";
+		
+		when(repository.findById(id)).thenReturn(Optional.empty());
+		
+		assertThrows(AppointmentNotFoundException.class, () -> service.cancelAppointment(id));
+		
+		verify(repository, never()).save(any());
+		
+	}
 	
+	@Test
+	void shouldThrowExceptionWhenCancelingAlreadyCanceledAppointment() { 
+		String id = "321";
+		
+		Appointment appointment = new Appointment();
+		
+		appointment.setId(id);
+		appointment.setStatus(AppointmentStatus.CANCELED);
+		
+		when(repository.findById(id)).thenReturn(Optional.of(appointment));
+		
+		assertThrows(InvalidAppointmentStateException.class, () -> service.cancelAppointment(id));
+		
+		verify(repository, never()).save(any());
+	}
 	
 	
 }
